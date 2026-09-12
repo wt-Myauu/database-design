@@ -12,6 +12,7 @@
 
 접속 정보는 `src/main/resources/application-local.yml**`. 이 파일은 `.gitignore`에 등록되어 커밋되지 않으므로**, 클론 후 템플릿을 복사하여 작성해야 한다.
 
+빌드 : `npm run dev`
 ---
 
 ## 규칙
