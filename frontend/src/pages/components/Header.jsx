@@ -1,24 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './Header.css';
 
 const NAV_ITEMS = ["추천 견적", "견적 검색", "Q&A", "고객지원"];
 
 export default function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isAiOn, setIsAiOn] = useState(true);
-
-  useEffect(() => {
-    const handleToggleAiSearch = () => {
-      setIsAiOn(true);
-      setIsSearchOpen((open) => !open);
-    };
-
-    window.addEventListener('toggle-ai-search', handleToggleAiSearch);
-
-    return () => {
-      window.removeEventListener('toggle-ai-search', handleToggleAiSearch);
-    };
-  }, []);
 
   const handleLogoClick = () => {
     window.location.href = '/';
@@ -98,23 +84,8 @@ export default function Header() {
           <input
             type="search"
             className="header__search-input"
-            placeholder={isAiOn ? 'AI 를 활용한 추천 견적을 확인해 보세요!   (예시: 100만원 이하의 사무용 PC 견적 추천해줘)' : '검색어를 입력하세요!'}
+            placeholder="AI를 활용한 추천 견적을 확인해 보세요! (예시: 100만원 이하의 사무용 PC 견적 추천해줘)"
           />
-
-          <div className="header__ai-toggle">
-            <span className="header__ai-label">AI</span>
-            <button
-              type="button"
-              className={`header__ai-switch ${isAiOn ? 'on' : 'off'}`}
-              aria-label={isAiOn ? 'AI 검색 켜짐' : 'AI 검색 꺼짐'}
-              aria-pressed={isAiOn}
-              onClick={() => setIsAiOn((value) => !value)}
-            >
-              <span className="header__ai-switch-track">
-                <span className="header__ai-switch-thumb" />
-              </span>
-            </button>
-          </div>
 
           <button type="button" className="header__search-button">
             검색
