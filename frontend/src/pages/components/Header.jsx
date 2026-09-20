@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './Header.css';
+import logoImage from '../../assets/logo.png';
 
 const NAV_ITEMS = ["추천 견적", "견적 검색", "Q&A", "고객지원"];
 
@@ -15,8 +16,8 @@ export default function Header() {
       <div className="header__inner">
         {/* Logo */}
         <div className="header__left">
-          <button type="button" className="header__logo" onClick={handleLogoClick}>
-            LOGO
+          <button type="button" className="header__logo" onClick={handleLogoClick} aria-label="홈으로 이동">
+            <img src={logoImage} alt="로고" className="header__logo-image" />
           </button>
         </div>
 
