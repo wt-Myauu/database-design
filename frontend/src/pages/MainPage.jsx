@@ -1,8 +1,12 @@
-﻿import './MainPage.css';
+﻿import { useNavigate } from 'react-router-dom';
+import './MainPage.css';
 import Header from './components/Header.jsx';
+import Footer from './components/Footer.jsx';
 import banner1 from '../assets/banner1.png';
 
 export default function Mainpage() {
+  const navigate = useNavigate();
+
   return (
     <div className="mainpage">
       <Header />
@@ -18,7 +22,7 @@ export default function Mainpage() {
             <p className="mainpage__subtitle">
               예산, 용도, 성능까지 분석해 가장 합리적인 조합을 제안합니다.
             </p>
-            <button type="button" className="mainpage__cta">
+            <button type="button" className="mainpage__cta" onClick={() => navigate('/recommendation')}>
               추천 견적 보기
             </button>
           </div>
@@ -31,6 +35,8 @@ export default function Mainpage() {
         </div>
         <hr className="mainpage__divider" />
       </main>
+
+      <Footer />
     </div>
   );
 }

@@ -1,7 +1,26 @@
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import './index.css';
 import Mainpage from './pages/MainPage.jsx';
+import RecommendationPage from './pages/RecommendationPage.jsx';
+
+function AppRoutes() {
+  const location = useLocation();
+
+  return (
+    <div key={location.pathname} className="page-transition">
+      <Routes location={location}>
+        <Route path="/" element={<Mainpage />} />
+        <Route path="/recommendation" element={<RecommendationPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </div>
+  );
+}
+
 export default function App() {
   return (
-    <Mainpage />
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   );
 }

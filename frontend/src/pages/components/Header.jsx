@@ -1,11 +1,16 @@
 import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import './Header.css';
 import logoImage from '../../assets/logo.png';
 
-const NAV_ITEMS = ["추천 견적", "견적 검색", "Q&A", "고객지원"];
+const NAV_ITEMS = [
+  { label: '추천 견적', path: '/recommendation' },
+  { label: '견적 검색', path: '/' },
+];
 
 export default function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const location = useLocation();
 
   const handleLogoClick = () => {
     window.location.href = '/';
@@ -24,39 +29,26 @@ export default function Header() {
         {/* Nav */}
         <nav aria-label="주요 메뉴" className="header__nav">
           <ul className="header__nav-list">
-            {NAV_ITEMS.map((item) => (
-              <li key={item}>
-                <a href="#" className="header__nav-link">
-                  {item}
-                </a>
-              </li>
-            ))}
+            {NAV_ITEMS.map((item) => {
+              const isActive =
+                item.path === '/' ? location.pathname === '/' : location.pathname.startsWith(item.path);
+
+              return (
+                <li key={item.label}>
+                  <Link
+                    to={item.path}
+                    className={`header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
 
         {/* Right side */}
         <div className="header__right">
-          <button
-            type="button"
-            aria-label="검색"
-            className="header__icon-btn"
-            onClick={() => setIsSearchOpen((open) => !open)}
-          >
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="7" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </button>
-
           <button type="button" aria-label="장바구니" className="header__icon-btn">
             <svg
               width="15"
