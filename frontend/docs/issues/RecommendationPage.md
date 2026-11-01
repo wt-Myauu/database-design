@@ -108,10 +108,38 @@ summary 는 카드와 같은 핵심 스펙으로 만듦. 예: "DDR5 / 32GB / 600
 - 수량 변경, 삭제, 전체 비우기도 cartStore 로.
 - 이미지는 imageUrl, 없으면 카테고리별 더미 이미지.
 
+6. 카드에서 상세 스펙 펼치기 - OK
+
+카드 아래 "▶ 상세 스펙" 을 누르면 펼쳐짐 (▶ 가 ▼ 로 회전). 펼친 카드만 길어짐.
+.recommendation-page__card-grid
++ align-items: start;  같은 줄의 다른 카드는 높이 그대로
+
+처음 펼칠 때 부품 상세 API 로 전체 스펙을 받아옴. AI 결과에 스펙이 없어도 볼 수 있음.
+한 번 받은 값은 카드가 기억해서 다시 펴도 다시 부르지 않음.
+내용: 제조사, 카테고리별 스펙 전체, 성능 점수 (없으면 -)
+
+추가: api/productApi.js 에 fetchProductDetail(category, moduleId)
+-> GET /api/modules/{cpus | main-boards | rams | graphic-cards | powers | ssds | hdds | monitors}/{id}/detail
+
+추가: utils/productSpecs.js
+SearchPage 에 있던 getSpecEntries 를 그대로 옮김. 검색 페이지 상세 패널과 추천 카드가 같이 씀.
+수정: 램 클럭 표기 MHz -> MT/s (값은 전송 속도. docs/스키마 설계/04-부품별-제약조건.md 1장)
+검색 페이지 상세 패널 표기도 같이 바뀜.
+
+참고: V7 에서 추가한 컬럼(보드 최대 메모리, 커넥터 수 등)은 상세 API 응답에 아직 없어서 안 나옴. 백엔드 DTO 수정 필요.
+참고: SearchPage.jsx 의 formatSpecValue 는 원래부터 안 쓰여서 lint 오류가 남. 이번에 건드리지 않음.
+
+7. 질문 내역 버튼이 헤더에 가려지는 문제 - OK
+
+헤더 높이는 100px 인데 버튼이 top: 92px 이라 위쪽 8px 가 가려졌음.
+.recommendation-page__sidebar-toggle
+top: 92px -> 112px  헤더 아래로 12px
+
 확인:
 - lint, vite build 통과
 - 헤드리스 브라우저로 확인: 간편 입력 화면, 실제 AI 결과를 넣은 카드 화면(메인보드 27개, 6장 + 21개 더 보기),
-  담기 -> 담김 ✓ / 장바구니 보기 (1), 새로고침 후 질문 내역 유지, 빈 장바구니 화면
+  담기 -> 담김 ✓ / 장바구니 보기 (1), 새로고침 후 질문 내역 유지, 빈 장바구니 화면,
+  상세 스펙 펼침(메인보드: 제조사·소켓·폼팩터·메모리 규격·슬롯·칩셋), 질문 내역 버튼 위치
 
 남은 문제 (백엔드·AI 쪽):
 - 견적 질문("100만원 이하 견적 맞춰줘")에 견적 한 세트가 아니라 부품 목록이 나옴.
