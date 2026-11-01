@@ -48,7 +48,7 @@
 
 .recommendation-page__sidebar-toggle {
   position: fixed;
-  top: 92px;
+  top: 112px; /* 헤더(100px) 아래로 12px */
   left: 16px;
   z-index: 40;
   width: 36px;
@@ -604,6 +604,8 @@
 .recommendation-page__card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  /* 상세를 펼친 카드만 길어지고 같은 줄의 다른 카드는 그대로 */
+  align-items: start;
   gap: 14px;
 }
 
@@ -689,10 +691,87 @@
 
 .recommendation-page__part-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   min-height: 30px;
   padding: 0 14px 14px;
+}
+
+.recommendation-page__detail-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  padding: 4px 0;
+  color: #93c5fd;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.recommendation-page__detail-toggle:hover {
+  color: #dbeafe;
+}
+
+.recommendation-page__detail-arrow {
+  display: inline-block;
+  font-size: 0.62rem;
+  transition: transform 0.2s ease;
+}
+
+.recommendation-page__part-card.is-open .recommendation-page__detail-arrow {
+  transform: rotate(90deg);
+}
+
+.recommendation-page__part-card.is-open {
+  border-color: rgba(96, 165, 250, 0.45);
+}
+
+.recommendation-page__part-detail {
+  margin: 0 14px 14px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(2, 6, 23, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.recommendation-page__part-detail-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.recommendation-page__part-detail-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.78rem;
+}
+
+.recommendation-page__part-detail-list dt {
+  flex-shrink: 0;
+  color: #94a3b8;
+}
+
+.recommendation-page__part-detail-list dd {
+  margin: 0;
+  color: #f8fafc;
+  font-weight: 600;
+  text-align: right;
+  word-break: keep-all;
+}
+
+.recommendation-page__part-detail-loading,
+.recommendation-page__part-detail-error {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+.recommendation-page__part-detail-error {
+  color: #fca5a5;
 }
 
 .recommendation-page__more-button {

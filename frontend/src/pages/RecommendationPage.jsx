@@ -4,6 +4,8 @@ import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
 import { addToCart, useCartItems } from '../cart/cartStore.js';
 import { DUMMY_IMAGES } from '../assets/dummyImages.js';
+import { fetchProductDetail } from '../api/productApi.js';
+import { getSpecEntries } from '../utils/productSpecs.js';
 import {
   deleteEntry,
   selectEntry,
@@ -278,6 +280,101 @@ function CartButton({ row, cartIds }) {
   );
 }
 
+// 부품 카드. ▶ 상세 스펙을 처음 펼칠 때 상세 API 로 전체 스펙을 받아온다.
+// AI 결과에는 스펙이 일부만 있거나 아예 없을 수 있기 때문이다.
+function PartCard({ category, row, specColumns, cartIds }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [detail, setDetail] = useState(null);
+  const [detailError, setDetailError] = useState('');
+  const canShowDetail = row.module_id != null;
+
+  const toggleDetail = () => {
+    const nextOpen = !isOpen;
+    setIsOpen(nextOpen);
+    if (nextOpen && !detail) {
+      setDetailError('');
+      fetchProductDetail(category, row.module_id)
+        .then(setDetail)
+        .catch((error) => setDetailError(error.message));
+    }
+  };
+
+  return (
+    <article className={`recommendation-page__part-card ${isOpen ? 'is-open' : ''}`}>
+      <div className="recommendation-page__part-image-wrap" aria-hidden="true">
+        <img
+          className="recommendation-page__part-image"
+          src={row.image_url || DUMMY_IMAGES[category]}
+          alt=""
+          loading="lazy"
+        />
+      </div>
+      <div className="recommendation-page__part-body">
+        <h4 className="recommendation-page__part-name">{row.name}</h4>
+        <strong className="recommendation-page__part-price">{formatCell('price', row.price, row)}</strong>
+        {specColumns.length > 0 ? (
+          <div className="recommendation-page__part-specs">
+            {specColumns
+              .filter((column) => row[column] !== null && row[column] !== undefined)
+              .map((column) => (
+                <span key={column} className="recommendation-page__part-spec">
+                  <em>{COLUMN_LABELS[column] ?? column}</em>
+                  {formatCell(column, row[column], row)}
+                </span>
+              ))}
+          </div>
+        ) : null}
+      </div>
+
+      <div className="recommendation-page__part-actions">
+        {canShowDetail ? (
+          <button
+            type="button"
+            className="recommendation-page__detail-toggle"
+            onClick={toggleDetail}
+            aria-expanded={isOpen}
+          >
+            <span className="recommendation-page__detail-arrow" aria-hidden="true">
+              ▶
+            </span>
+            상세 스펙
+          </button>
+        ) : (
+          <span />
+        )}
+        <CartButton row={row} cartIds={cartIds} />
+      </div>
+
+      {isOpen ? (
+        <div className="recommendation-page__part-detail">
+          {detailError ? (
+            <p className="recommendation-page__part-detail-error">{detailError}</p>
+          ) : !detail ? (
+            <p className="recommendation-page__part-detail-loading">불러오는 중…</p>
+          ) : (
+            <dl className="recommendation-page__part-detail-list">
+              <div>
+                <dt>제조사</dt>
+                <dd>{detail.brand}</dd>
+              </div>
+              {getSpecEntries(detail).map(([label, value]) => (
+                <div key={label}>
+                  <dt>{label}</dt>
+                  <dd>{value}</dd>
+                </div>
+              ))}
+              <div>
+                <dt>성능 점수</dt>
+                <dd>{detail.performanceScore == null ? '-' : detail.performanceScore.toLocaleString()}</dd>
+              </div>
+            </dl>
+          )}
+        </div>
+      ) : null}
+    </article>
+  );
+}
+
 // 부품 한 종류의 결과. 처음 6개만 카드로 보여주고 나머지는 "더 보기"로 펼친다.
 function CardSection({ category, title, specColumns, rows, cartIds }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -292,35 +389,13 @@ function CardSection({ category, title, specColumns, rows, cartIds }) {
 
       <div className="recommendation-page__card-grid">
         {visibleRows.map((row, rowIndex) => (
-          <article key={row.module_id ?? rowIndex} className="recommendation-page__part-card">
-            <div className="recommendation-page__part-image-wrap" aria-hidden="true">
-              <img
-                className="recommendation-page__part-image"
-                src={row.image_url || DUMMY_IMAGES[category]}
-                alt=""
-                loading="lazy"
-              />
-            </div>
-            <div className="recommendation-page__part-body">
-              <h4 className="recommendation-page__part-name">{row.name}</h4>
-              <strong className="recommendation-page__part-price">{formatCell('price', row.price, row)}</strong>
-              {specColumns.length > 0 ? (
-                <div className="recommendation-page__part-specs">
-                  {specColumns
-                    .filter((column) => row[column] !== null && row[column] !== undefined)
-                    .map((column) => (
-                      <span key={column} className="recommendation-page__part-spec">
-                        <em>{COLUMN_LABELS[column] ?? column}</em>
-                        {formatCell(column, row[column], row)}
-                      </span>
-                    ))}
-                </div>
-              ) : null}
-            </div>
-            <div className="recommendation-page__part-actions">
-              <CartButton row={row} cartIds={cartIds} />
-            </div>
-          </article>
+          <PartCard
+            key={row.module_id ?? rowIndex}
+            category={category}
+            row={row}
+            specColumns={specColumns}
+            cartIds={cartIds}
+          />
         ))}
       </div>
 
